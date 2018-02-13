@@ -1,0 +1,16 @@
+C:\Development\Authsome\Authsome.Portable\bin\Debug\Authsome.Portable.dll.config
+C:\Development\Authsome\Authsome.Portable\bin\Debug\Authsome.Portable.dll
+C:\Development\Authsome\Authsome.Portable\bin\Debug\Authsome.Portable.pdb
+C:\Development\Authsome\Authsome.Portable\bin\Debug\Newtonsoft.Json.dll
+C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.dll
+C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.Extensions.dll
+C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.Primitives.dll
+C:\Development\Authsome\Authsome.Portable\bin\Debug\Newtonsoft.Json.xml
+C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.xml
+C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.Extensions.xml
+C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.Primitives.xml
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.App.config
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csprojResolveAssemblyReference.cache
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.CoreCompileInputs.cache
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.dll
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.pdb
