@@ -55,19 +55,19 @@ namespace Authsome
             else
                 content = new StringContent("", Encoding.UTF8, "application/json");
 
-            return await client.PostAsync(new Uri(url), content);
+            return await client.PostAsync(new Uri(url, UriKind.RelativeOrAbsolute), content);
         }
 
         public static async Task<HttpResponseMessage> DeleteAsJsonAsync(this HttpClient client, string url, string userAgent = null, string token = null)
         {
             client.SetDefaultConfigs(userAgent, token);
-            return await client.DeleteAsync(new Uri(url));
+            return await client.DeleteAsync(new Uri(url, UriKind.RelativeOrAbsolute));
         }
 
         public static async Task<HttpResponseMessage> GetAsJsonAsync(this HttpClient client, string url, string userAgent = null, string token = null)
         {
             client.SetDefaultConfigs(userAgent, token);
-            return await client.GetAsync(new Uri(url));
+            return await client.GetAsync(new Uri(url, UriKind.RelativeOrAbsolute));
         }
 
         public static async Task<T> ReadAsAsync<T>(this HttpContent httpContent)

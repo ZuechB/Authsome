@@ -10,7 +10,6 @@ C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.xml
 C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.Extensions.xml
 C:\Development\Authsome\Authsome.Portable\bin\Debug\System.Net.Http.Primitives.xml
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.App.config
-C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csprojResolveAssemblyReference.cache
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.CoreCompileInputs.cache
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.dll
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.pdb
