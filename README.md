@@ -11,8 +11,9 @@ RefreshedToken: If using OAuth, this will return your token when refreshed. If t
 
 response: All responses return HttpResponseWrapper<your-return-object> to provide you with the content of the object and any status codes and failed responses back from the server
 
-<code>
-var response = await authsomeService.Request<Item_Create_Response_Rootobject>(HttpOption.Post, "<URL>", <MYOBJECT>, RefreshedToken: (HttpResponseRefreshToken) =>
+<pre><code>
+var response = await authsomeService.Request<Item_Create_Response_Rootobject>(HttpOption.Post, "<URL>", <MYOBJECT>, RefreshedToken
+    (HttpResponseRefreshToken) =>
     {
         if (HttpResponseRefreshToken.httpStatusCode == HttpStatusCode.OK)
         {
@@ -23,4 +24,4 @@ var response = await authsomeService.Request<Item_Create_Response_Rootobject>(Ht
             WeHaveAnIssue(HttpResponseRefreshToken);
         }
     });
-</code>
+</code></pre>
