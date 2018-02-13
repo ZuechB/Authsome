@@ -4,11 +4,12 @@ Interface that allows you to send requests (including OAuth and Basic Auth) and 
 
 #Method Example:
 
-HttpOption: POST, GET, DELETE, PUT
-URL: Provide the absolute url or relative url (if baseurl is provided in the provider object)
-MYOBJECT: Object that you want to pass as the body
-RefreshedToken: If using OAuth, this will return your token when refreshed. If the provider information is supplied then the method will attempt to refresh the token when the response unauthorized is given back from the server
-
+<ol>
+    <li>HttpOption: POST, GET, DELETE, PUT</li>
+    <li>URL: Provide the absolute url or relative url (if baseurl is provided in the provider object)</li>
+    <li>MYOBJECT: Object that you want to pass as the body</li>
+    <li>RefreshedToken: If using OAuth, this will return your token when refreshed. If the provider information is supplied then the method will attempt to refresh the token when the response unauthorized is given back from the server</li>
+</ol>
 response: All responses return HttpResponseWrapper<your-return-object> to provide you with the content of the object and any status codes and failed responses back from the server
 
 <pre><code>
