@@ -13,3 +13,4 @@ C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.App
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.CoreCompileInputs.cache
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.dll
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.pdb
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csprojResolveAssemblyReference.cache

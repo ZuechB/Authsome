@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Authsome.Portable", "Authsome.Portable\Authsome.Portable.csproj", "{579DC56A-717B-4867-A74C-FBE260FC0901}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{972AFAF0-2731-44A5-AB79-D1BC46802EBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreConsoleApp", "CoreConsoleApp\CoreConsoleApp.csproj", "{6E3BCA26-D5C6-4BEF-95F0-3E95F3C4BE00}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{579DC56A-717B-4867-A74C-FBE260FC0901}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{579DC56A-717B-4867-A74C-FBE260FC0901}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{579DC56A-717B-4867-A74C-FBE260FC0901}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E3BCA26-D5C6-4BEF-95F0-3E95F3C4BE00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E3BCA26-D5C6-4BEF-95F0-3E95F3C4BE00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E3BCA26-D5C6-4BEF-95F0-3E95F3C4BE00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E3BCA26-D5C6-4BEF-95F0-3E95F3C4BE00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6E3BCA26-D5C6-4BEF-95F0-3E95F3C4BE00} = {972AFAF0-2731-44A5-AB79-D1BC46802EBC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9AA13AB8-A108-4F61-B225-F1CCE94806C2}
