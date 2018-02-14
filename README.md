@@ -1,6 +1,9 @@
 # Authsome
 Interface that allows you to send requests (including OAuth and Basic Auth) and parse the response in one step and removing all the retry logic, encoding, serialization, refreshing tokens. WARNING: This project is very early and may change completely.
 
+## Nuget
+
+https://www.nuget.org/packages/Authsome.Portable
 
 # Method Example:
 
