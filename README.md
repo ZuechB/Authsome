@@ -17,6 +17,13 @@ var response = await authsome.GetAsync<BingJson_Rootobject>("https://www.bing.co
     (header) =>
     {
         header.IncludeAcceptMediaType(MediaType.application_json);
+    }, 
+    (refreshedToken) => // in the event of oauth refresh
+    {
+        if (refreshedToken.httpStatusCode == System.Net.HttpStatusCode.OK)
+        {
+            //refreshedToken.Content.access_token -- your new token
+        }
     });
 
 if (response.httpStatusCode == System.Net.HttpStatusCode.OK)

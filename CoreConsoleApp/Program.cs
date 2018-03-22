@@ -19,6 +19,13 @@ namespace CoreConsoleApp
                     (header) =>
                     {
                         header.IncludeAcceptMediaType(MediaType.application_json);
+                    }, 
+                    (refreshedToken) =>
+                    {
+                        if (refreshedToken.httpStatusCode == System.Net.HttpStatusCode.OK)
+                        {
+                            //refreshedToken.Content.access_token -- your new token
+                        }
                     });
 
                 if (response.httpStatusCode == System.Net.HttpStatusCode.OK)

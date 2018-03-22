@@ -17,17 +17,17 @@ namespace Authsome
     {
         Provider Provider { get; set; }
 
-        Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
-        Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
 
         //string RequestAuthorization();
         //Task<TokenResponse> RequestBearerTokenAsync(string code);
@@ -43,18 +43,18 @@ namespace Authsome
 
         public AuthsomeService() { }
 
-        public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Get, url, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Get, url, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
@@ -68,11 +68,11 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
                 }
 
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
@@ -86,11 +86,11 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
                 }
 
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
@@ -104,44 +104,44 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 }
 
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
@@ -155,11 +155,11 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 }
 
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
@@ -173,11 +173,11 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
                 }
 
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
@@ -191,29 +191,29 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
                 }
 
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
-        public async Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null)
+        public async Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
             {
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Delete, url, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Delete, url, Provider: Provider, RefreshedToken: RefreshedToken);
             }
         }
 
