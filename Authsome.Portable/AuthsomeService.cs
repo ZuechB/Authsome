@@ -1,8 +1,13 @@
 ﻿using Authsome.Models;
+using Authsome.Portable.Builder;
+using Authsome.Portable.Extentions;
+using Authsome.Portable.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,207 +17,216 @@ namespace Authsome
     {
         Provider Provider { get; set; }
 
+        Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
 
-        string RequestAuthorization();
-        Task<TokenResponse> RequestBearerTokenAsync(string code);
-        Task<HttpResponseWrapper<TokenResponse>> RefreshTheAccessTokenAsync(string refreshToken);
-        Task<bool> RevokeTokenAsync(TokenType tokenType, string token);
+        //string RequestAuthorization();
+        //Task<TokenResponse> RequestBearerTokenAsync(string code);
+        //Task<HttpResponseWrapper<TokenResponse>> RefreshTheAccessTokenAsync(string refreshToken);
+        //Task<bool> RevokeTokenAsync(TokenType tokenType, string token);
 
-
-        Task<HttpResponseWrapper<T>> Request<T>(HttpOption method, string url, object body = null, string userAgent = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
+        //Task<HttpResponseWrapper<T>> Request<T>(HttpOption method, string url, object body = null, string userAgent = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
     }
-
-    public delegate void TokenRenewalDelegate(TokenResponse tokenResponse);
 
     public class AuthsomeService : IAuthsomeService
     {
+        public Provider Provider { get; set; } // currently this must be defined by the user
+
         public AuthsomeService() { }
 
-        public Provider Provider { get; set; }
-
-        public string RequestAuthorization()
+        public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null)
         {
-            if (Provider != null)
+            using (var client = new HttpClient())
             {
-                var scope = "";
-                for (int i = 0; i < Provider.scope.Length; i++)
-                {
-                    if (i > 0) { scope += "%20"; }
-                    scope += Provider.scope[i];
-                }
-
-                return Provider.authorizationUrl
-                    .Replace("{clientId}", Provider.clientId)
-                    .Replace("{redirectUrl}", Provider.redirectUrl.Replace("{provider}", ((int)Provider.Id).ToString()))
-                    .Replace("{state}", Provider.state)
-                    .Replace("{scope}", scope)
-                    .Replace("{response_type}", Provider.response_type);
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+                return await factory.Request<T>(client, HttpOption.Get, url, Provider: Provider);
             }
-            return "";
         }
 
-        public async Task<TokenResponse> RequestBearerTokenAsync(string code)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null)
         {
-            if (Provider != null)
+            using (var client = new HttpClient())
             {
-                var client = new HttpClient();
-                client.SetBasicAuthentication(Provider.clientId, Provider.secret);
-                var content = new FormUrlEncodedContent(new[]
-                {
-                    new KeyValuePair<string, string>("code", code),
-                    new KeyValuePair<string, string>("redirect_uri", Provider.redirectUrl.Replace("{provider}", ((int)Provider.Id).ToString())),
-                    new KeyValuePair<string, string>("grant_type", "authorization_code")
-                });
-                var response = await client.PostAsync(Provider.TokenBearerUrl, content);
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
 
-                Provider.TokenResponse = await response.Content.ReadAsAsync<TokenResponse>();
-                return Provider.TokenResponse;
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
+                }
+
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
             }
-            return null;
         }
 
-        public async Task<HttpResponseWrapper<TokenResponse>> RefreshTheAccessTokenAsync(string refreshToken)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null)
         {
-            if (Provider != null)
+            using (var client = new HttpClient())
             {
-                var httpResponseWrapper = new HttpResponseWrapper<TokenResponse>();
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
 
-                var client = new HttpClient();
-                client.SetBasicAuthentication(Provider.clientId, Provider.secret);
-
-                var response = await client.PostAsync(Provider.RefreshAccessTokenUrl,
-                    new StringContent("grant_type=refresh_token&refresh_token=" + refreshToken, Encoding.UTF8, "application/x-www-form-urlencoded"));
-
-                if (response.StatusCode == HttpStatusCode.OK)
+                HttpContent bodyContent = null;
+                if (body != null)
                 {
-                    httpResponseWrapper.Content = await response.Content.ReadAsAsync<TokenResponse>();
-                }
-                else
-                {
-                    httpResponseWrapper.ErrorJson = await response.Content.ReadAsStringAsync();
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
                 }
 
-                httpResponseWrapper.httpStatusCode = response.StatusCode;
-
-                return httpResponseWrapper;
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
             }
-            return null;
         }
 
-        public async Task<bool> RevokeTokenAsync(TokenType tokenType, string token)
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null)
         {
-            if (Provider != null)
+            using (var client = new HttpClient())
             {
-                var tokenHintType = "refresh_token";
-                if (tokenType == TokenType.AccessToken)
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
                 {
-                    tokenHintType = "access_token";
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 }
 
-                var client = new HttpClient();
-                client.SetBasicAuthentication(Provider.clientId, Provider.secret);
-                var response = await client.PostAsJsonAsync(Provider.RevokeUrl, new
-                {
-                    token_type_hint = tokenHintType,
-                    token = token
-                });
-
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return true;
-                }
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
             }
-            return false;
+        }
+
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+                }
+
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
+                }
+
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
+                }
+
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+                return await factory.Request<T>(client, HttpOption.Delete, url, Provider: Provider);
+            }
         }
 
 
-        public async Task<HttpResponseWrapper<T>> Request<T>(HttpOption method, string url, object body = null, string userAgent = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
+        /// <summary>
+        /// This fires the default settings for our httpclient before the user changes anything
+        /// </summary>
+        /// <param name="client"></param>
+        private void SetDefaultConfigs(HttpClient client)
         {
-            T obj = default(T);
-            using (HttpClient client = new HttpClient())
-            {
-                if (Provider != null && !String.IsNullOrWhiteSpace(Provider.APIBaseUrl))
-                {
-                    client.BaseAddress = new Uri(Provider.APIBaseUrl);
-                }
-
-                string accessToken = null;
-                if (Provider != null && Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(Provider.TokenResponse.access_token))
-                {
-                    accessToken = Provider.TokenResponse.access_token;
-                }
-
-                HttpResponseMessage httpResponseMessage = null;
-                switch(method)
-                {
-                    case HttpOption.Post:
-                        httpResponseMessage = await client.PostAsJsonAsync(url, body, userAgent, accessToken);
-                        break;
-                    case HttpOption.Get:
-                        httpResponseMessage = await client.GetAsJsonAsync(url, userAgent, accessToken);
-                        break;
-                    case HttpOption.Put:
-                        httpResponseMessage = await client.PutAsJsonAsync(url, body, userAgent, accessToken);
-                        break;
-                    case HttpOption.Delete:
-                        httpResponseMessage = await client.DeleteAsJsonAsync(url, userAgent, accessToken);
-                        break;
-                }
-
-                var wrap = new HttpResponseWrapper<T>();
-                if (httpResponseMessage != null)
-                {
-                    wrap.httpStatusCode = httpResponseMessage.StatusCode;
-
-                    if (wrap.httpStatusCode == HttpStatusCode.Unauthorized)
-                    {
-                        // attempt to renew and recall the same api
-                        if (Provider != null && Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(Provider.TokenResponse.refresh_token))
-                        {
-                            var tokenReponse = await RefreshTheAccessTokenAsync(Provider.TokenResponse.refresh_token);
-
-                            // regardless of the state of the token (valid or not) we want to notify what happened on the request
-                            if (RefreshedToken != null)
-                            {
-                                RefreshedToken(tokenReponse);
-                            }
-
-                            if (tokenReponse.httpStatusCode == HttpStatusCode.OK)
-                            {
-                                // store the token in memory
-                                Provider.TokenResponse = tokenReponse.Content;
-                                
-                                // since the token was refresh we can now re-attempted the actual call
-                                return await Request<T>(method, url, body);
-                            }
-                        }
-                    }
-                    else if (wrap.httpStatusCode == HttpStatusCode.BadRequest)
-                    {
-                        if (httpResponseMessage.Content != null)
-                        {
-                            wrap.ErrorJson = await httpResponseMessage.Content.ReadAsStringAsync();
-                        }
-                    }
-                    else if (wrap.httpStatusCode == HttpStatusCode.Forbidden)
-                    {
-                        // you do not have permission to continue
-                        if (httpResponseMessage.Content != null)
-                        {
-                            wrap.ErrorJson = await httpResponseMessage.Content.ReadAsStringAsync();
-                        }
-                    }
-                    else
-                    {
-                        if (httpResponseMessage.Content != null)
-                        {
-                            wrap.Content = await httpResponseMessage.Content.ReadAsAsync<T>();
-                        }
-                    }
-                }
-
-                return wrap;
-            }
+            //client.DefaultRequestHeaders
+            //    .Accept
+            //    .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
         }
     }
 }
