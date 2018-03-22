@@ -15,6 +15,9 @@ namespace Authsome.Portable.Extentions
                 case MediaType.application_javascript:
                     _mediaType = "application/javascript";
                     break;
+                case MediaType.application_octetstream:
+                    _mediaType = "application/octet-stream";
+                    break;
                 case MediaType.application_json:
                     _mediaType = "application/json";
                     break;

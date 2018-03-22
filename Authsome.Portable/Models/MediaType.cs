@@ -27,6 +27,7 @@
         text_plain = 22,
         image_png = 23,
         image_jpeg = 24,
-        image_gif = 25
+        image_gif = 25,
+        application_octetstream = 26
     }
 }
