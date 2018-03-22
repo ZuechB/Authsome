@@ -14,19 +14,18 @@ https://www.nuget.org/packages/Authsome.Portable
 
 <pre><code>
 var response = await authsome.GetAsync<BingJson_Rootobject>("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US",
-        (header) =>
-        {
-            header.IncludeUserAgent("Happy Fun User");
-            header.IncludeAcceptMediaType(MediaType.application_json);
-        });
+    (header) =>
+    {
+        header.IncludeAcceptMediaType(MediaType.application_json);
+    });
 
-    if (response.httpStatusCode == System.Net.HttpStatusCode.OK)
-    {
-        var image = response.Content.images.FirstOrDefault();
-        Console.WriteLine("image url" + image.url);
-    }
-    else
-    {
-        Console.WriteLine(response.httpStatusCode.ToString() + " - " + result.ErrorJson);
-    }
+if (response.httpStatusCode == System.Net.HttpStatusCode.OK)
+{
+    var image = response.Content.images.FirstOrDefault();
+    Console.WriteLine("image url" + image.url);
+}
+else
+{
+    Console.WriteLine(response.httpStatusCode.ToString() + " - " + response.ErrorJson);
+}
 </code></pre>
