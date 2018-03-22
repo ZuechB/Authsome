@@ -1,6 +1,7 @@
 ﻿using Authsome.Models;
 using Authsome.Portable.Builder;
 using Authsome.Portable.Extentions;
+using Authsome.Portable.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -18,11 +19,14 @@ namespace Authsome
 
         Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
 
         //string RequestAuthorization();
@@ -47,6 +51,42 @@ namespace Authsome
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
                 return await factory.Request<T>(client, HttpOption.Get, url, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
+                }
+
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
+                }
+
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider);
             }
         }
 
@@ -119,6 +159,42 @@ namespace Authsome
             }
         }
 
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
+                }
+
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+            }
+        }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body = null, MediaType mediaType = MediaType.application_json, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            using (var client = new HttpClient())
+            {
+                SetDefaultConfigs(client);
+                var factory = new RequestFactory();
+                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
+
+                HttpContent bodyContent = null;
+                if (body != null)
+                {
+                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
+                }
+
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+            }
+        }
+
         public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
         {
             using (var client = new HttpClient())
@@ -126,7 +202,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider);
+                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider);
             }
         }
 
@@ -148,9 +224,9 @@ namespace Authsome
         /// <param name="client"></param>
         private void SetDefaultConfigs(HttpClient client)
         {
-            client.DefaultRequestHeaders
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
+            //client.DefaultRequestHeaders
+            //    .Accept
+            //    .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
         }
     }
 }

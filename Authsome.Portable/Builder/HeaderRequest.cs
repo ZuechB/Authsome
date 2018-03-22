@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Authsome.Portable.Extentions;
+using Authsome.Portable.Models;
+using System;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -8,9 +10,10 @@ namespace Authsome.Portable.Builder
     {
         IHeaderRequest IncludeHeader(string key, string value);
         IHeaderRequest IncludeUserAgent(string value);
-        //IHeaderRequest IncludeAcceptMediaType(string mediaType);
         IHeaderRequest IncludeBearerAuthentication(string token);
         IHeaderRequest IncludeBasicAuth(string username, string password);
+        IHeaderRequest IncludeAcceptMediaType(string mediaType);
+        IHeaderRequest IncludeAcceptMediaType(MediaType mediaType);
     }
 
     public class HeaderRequest : IHeaderRequest
@@ -72,14 +75,22 @@ namespace Authsome.Portable.Builder
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="mediaType">Defaults to "application/json"</param>
+        /// <param name="mediaType"></param>
         /// <returns></returns>
-        //public IHeaderRequest IncludeAcceptMediaType(string mediaType)
-        //{
-        //    requestMessage
-        //        .Accept
-        //        .Add(new MediaTypeWithQualityHeaderValue(mediaType)); //ACCEPT header
-        //    return this;
-        //}
+        public IHeaderRequest IncludeAcceptMediaType(string mediaType)
+        {
+            requestMessage
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue(mediaType)); //ACCEPT header
+            return this;
+        }
+
+        public IHeaderRequest IncludeAcceptMediaType(MediaType mediaType)
+        {
+            requestMessage
+                .Accept
+                .Add(new MediaTypeWithQualityHeaderValue(mediaType.GetMediaType())); //ACCEPT header
+            return this;
+        }
     }
 }

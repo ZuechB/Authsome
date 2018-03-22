@@ -39,8 +39,10 @@
     <Compile Include="Extentions\AuthsomeBaseService.cs" />
     <Compile Include="Extentions\HttpClientExtention.cs" />
     <Compile Include="Extentions\HttpOption.cs" />
+    <Compile Include="Extentions\MediaTypeExtention.cs" />
     <Compile Include="Extentions\OAuth.cs" />
     <Compile Include="Extentions\RequestFactory.cs" />
+    <Compile Include="Models\MediaType.cs" />
     <Compile Include="Models\HttpResponseWrapper.cs" />
     <Compile Include="Builder\HeaderRequest.cs" />
     <Compile Include="Models\TokenType.cs" />

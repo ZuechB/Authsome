@@ -13,14 +13,7 @@ namespace Authsome
             var readString = await httpContent.ReadAsStringAsync();
             if (!String.IsNullOrWhiteSpace(readString))
             {
-                try
-                {
-                    return JsonConvert.DeserializeObject<T>(readString);
-                }
-                catch (Exception)
-                {
-                    return default(T);
-                }
+                return JsonConvert.DeserializeObject<T>(readString);
             }
             return default(T);
         }
