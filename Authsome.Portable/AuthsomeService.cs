@@ -4,10 +4,7 @@ using Authsome.Portable.Extentions;
 using Authsome.Portable.Models;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -39,9 +36,23 @@ namespace Authsome
 
     public class AuthsomeService : IAuthsomeService
     {
-        public Provider Provider { get; set; } // currently this must be defined by the user
+        public OAuth oAuth { get; set; }
+        public AuthsomeService()
+        {
+            oAuth = new OAuth();
+        }
 
-        public AuthsomeService() { }
+        public Provider Provider
+        {
+            get
+            {
+                return oAuth.Provider;
+            }
+            set
+            {
+                oAuth.Provider = value;
+            }
+        }
 
         public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
@@ -50,7 +61,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Get, url, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Get, url, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -68,7 +79,7 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
                 }
 
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -86,7 +97,7 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
                 }
 
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -104,7 +115,7 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 }
 
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -115,7 +126,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Post, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -126,7 +137,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Post, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Post, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -137,7 +148,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Put, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -155,7 +166,7 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
                 }
 
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -173,7 +184,7 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
                 }
 
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -191,7 +202,7 @@ namespace Authsome
                     bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
                 }
 
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -202,7 +213,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, content, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Put, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 
@@ -213,7 +224,7 @@ namespace Authsome
                 SetDefaultConfigs(client);
                 var factory = new RequestFactory();
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Delete, url, Provider: Provider, RefreshedToken: RefreshedToken);
+                return await factory.Request<T>(client, HttpOption.Delete, url, oAuth: oAuth, RefreshedToken: RefreshedToken);
             }
         }
 

@@ -9,11 +9,7 @@ namespace Authsome.Portable.Extentions
 {
     public class OAuth
     {
-        private Provider Provider { get; set; }
-        public OAuth(Provider Provider)
-        {
-            this.Provider = Provider;
-        }
+        public Provider Provider { get; set; }
 
         public string RequestAuthorization()
         {

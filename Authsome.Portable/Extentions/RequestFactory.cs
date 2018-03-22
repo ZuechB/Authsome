@@ -10,19 +10,19 @@ namespace Authsome.Portable.Extentions
 {
     public class RequestFactory
     {
-        public async Task<HttpResponseWrapper<T>> Request<T>(HttpClient client, HttpOption method, string url, HttpContent bodyContent = null, Provider Provider = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
+        public async Task<HttpResponseWrapper<T>> Request<T>(HttpClient client, HttpOption method, string url, HttpContent bodyContent = null, OAuth oAuth = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             T obj = default(T);
 
-            if (Provider != null && !String.IsNullOrWhiteSpace(Provider.APIBaseUrl))
+            if (oAuth != null && oAuth.Provider != null && !String.IsNullOrWhiteSpace(oAuth.Provider.APIBaseUrl))
             {
-                client.BaseAddress = new Uri(Provider.APIBaseUrl);
+                client.BaseAddress = new Uri(oAuth.Provider.APIBaseUrl);
             }
 
             string accessToken = null;
-            if (Provider != null && Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(Provider.TokenResponse.access_token))
+            if (oAuth != null && oAuth.Provider != null && oAuth.Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(oAuth.Provider.TokenResponse.access_token))
             {
-                accessToken = Provider.TokenResponse.access_token;
+                accessToken = oAuth.Provider.TokenResponse.access_token;
             }
 
             HttpResponseMessage httpResponseMessage = null;
@@ -51,10 +51,9 @@ namespace Authsome.Portable.Extentions
                 if (wrap.httpStatusCode == HttpStatusCode.Unauthorized)
                 {
                     // attempt to renew and recall the same api
-                    if (Provider != null && Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(Provider.TokenResponse.refresh_token))
+                    if (oAuth != null && oAuth.Provider != null && oAuth.Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(oAuth.Provider.TokenResponse.refresh_token))
                     {
-                        var oAuth = new OAuth(Provider);
-                        var tokenReponse = await oAuth.RefreshTheAccessTokenAsync(Provider.TokenResponse.refresh_token);
+                        var tokenReponse = await oAuth.RefreshTheAccessTokenAsync(oAuth.Provider.TokenResponse.refresh_token);
 
                         // regardless of the state of the token (valid or not) we want to notify what happened on the request
                         if (RefreshedToken != null)
@@ -65,7 +64,7 @@ namespace Authsome.Portable.Extentions
                         if (tokenReponse.httpStatusCode == HttpStatusCode.OK)
                         {
                             // store the token in memory
-                            Provider.TokenResponse = tokenReponse.Content;
+                            oAuth.Provider.TokenResponse = tokenReponse.Content;
 
                             // since the token was refresh we can now re-attempted the actual call
                             return await Request<T>(client, method, url, bodyContent);
