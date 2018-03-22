@@ -7,30 +7,26 @@ https://www.nuget.org/packages/Authsome.Portable
 
 # Method Example:
 
-### Arguments
-<ol>
-    <li>HttpOption: POST, GET, DELETE, PUT</li>
-    <li>URL: Provide the absolute url or relative url (if baseurl is provided in the provider object)</li>
-    <li>MYOBJECT: Object that you want to pass as the body</li>
-    <li>RefreshedToken: If using OAuth, this will return your token when refreshed. If the provider information is supplied then the method will attempt to refresh the token when the response unauthorized is given back from the server</li>
-</ol>
-
 ### Return / Response
 <ol>
     <li>response: All responses return HttpResponseWrapper<your-return-object> to provide you with the content of the object and any status codes and failed responses back from the server</li>
 </ol>
 
 <pre><code>
-var response = await authsomeService.Request<Item_Create_Response_Rootobject>(HttpOption.Post, "URL", MYOBJECT, RefreshedToken
-    (HttpResponseRefreshToken) =>
+var response = await authsome.GetAsync<BingJson_Rootobject>("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US",
+        (header) =>
+        {
+            header.IncludeUserAgent("Happy Fun User");
+            header.IncludeAcceptMediaType(MediaType.application_json);
+        });
+
+    if (response.httpStatusCode == System.Net.HttpStatusCode.OK)
     {
-        if (HttpResponseRefreshToken.httpStatusCode == HttpStatusCode.OK)
-        {
-            RenewRefreshToken(HttpResponseRefreshToken.Content);
-        }
-        else
-        {
-            WeHaveAnIssue(HttpResponseRefreshToken);
-        }
-    });
+        var image = response.Content.images.FirstOrDefault();
+        Console.WriteLine("image url" + image.url);
+    }
+    else
+    {
+        Console.WriteLine(response.httpStatusCode.ToString() + " - " + result.ErrorJson);
+    }
 </code></pre>
