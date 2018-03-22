@@ -13,6 +13,7 @@ namespace Authsome
     public interface IAuthsomeService
     {
         Provider Provider { get; set; }
+        OAuth oAuth { get; set; }
 
         Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null);
