@@ -65,152 +65,82 @@ namespace Authsome
 
         public async Task<HttpResponseWrapper<T>> GetAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
-            {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Get, url, oAuth: oAuth, RefreshedToken: RefreshedToken);
-            }
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Get, url, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
+            var factory = new RequestFactory();
+            HttpContent bodyContent = null;
+            if (body != null)
             {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-
-                HttpContent bodyContent = null;
-                if (body != null)
-                {
-                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
-                }
-
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
+                bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
             }
+            return await factory.Request<T>(HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body, MediaType mediaType, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
+            var factory = new RequestFactory();
+            HttpContent bodyContent = null;
+            if (body != null)
             {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-
-                HttpContent bodyContent = null;
-                if (body != null)
-                {
-                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
-                }
-
-                return await factory.Request<T>(client, HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
+                bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
             }
+            return await factory.Request<T>(HttpOption.Post, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
-            {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Post, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
-            }
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Post, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
-            {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Post, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
-            }
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Post, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
-            {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
-            }
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Put, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
+            var factory = new RequestFactory();
+            HttpContent bodyContent = null;
+            if (body != null)
             {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-
-                HttpContent bodyContent = null;
-                if (body != null)
-                {
-                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
-                }
-
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
+                bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType);
             }
+            return await factory.Request<T>(HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body, MediaType mediaType, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
+            var factory = new RequestFactory();
+            HttpContent bodyContent = null;
+            if (body != null)
             {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-
-                HttpContent bodyContent = null;
-                if (body != null)
-                {
-                    bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
-                }
-
-                return await factory.Request<T>(client, HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
+                bodyContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, mediaType.GetMediaType());
             }
+            return await factory.Request<T>(HttpOption.Put, url, bodyContent, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
-            {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Put, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
-            }
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Put, url, content, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
 
         public async Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
-            using (var client = new HttpClient())
-            {
-                SetDefaultConfigs(client);
-                var factory = new RequestFactory();
-                HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
-                return await factory.Request<T>(client, HttpOption.Delete, url, oAuth: oAuth, RefreshedToken: RefreshedToken);
-            }
-        }
-
-
-        /// <summary>
-        /// This fires the default settings for our httpclient before the user changes anything
-        /// </summary>
-        /// <param name="client"></param>
-        private void SetDefaultConfigs(HttpClient client)
-        {
-            client.DefaultRequestHeaders
-                .Accept
-                .Add(new MediaTypeWithQualityHeaderValue("application/json")); //ACCEPT header
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Delete, url, oAuth: oAuth, RefreshedToken: RefreshedToken);
         }
     }
 }

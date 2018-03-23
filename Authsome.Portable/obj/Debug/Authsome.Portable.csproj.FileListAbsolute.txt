@@ -14,3 +14,4 @@ C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.Cor
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csproj.CopyComplete
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.dll
 C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.pdb
+C:\Development\Authsome\Authsome.Portable\obj\Debug\Authsome.Portable.csprojResolveAssemblyReference.cache
