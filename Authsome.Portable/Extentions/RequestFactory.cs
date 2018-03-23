@@ -16,7 +16,7 @@ namespace Authsome.Portable.Extentions
         {
             using (var client = new HttpClient())
             {
-                //SetDefaultConfigs(client);
+                SetDefaultConfigs(client);
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
 
 
