@@ -19,7 +19,6 @@ namespace Authsome.Portable.Extentions
                 SetDefaultConfigs(client);
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
 
-
                 T obj = default(T);
 
                 if (oAuth != null && oAuth.Provider != null && !String.IsNullOrWhiteSpace(oAuth.Provider.APIBaseUrl))
@@ -27,10 +26,9 @@ namespace Authsome.Portable.Extentions
                     client.BaseAddress = new Uri(oAuth.Provider.APIBaseUrl);
                 }
 
-                string accessToken = null;
                 if (oAuth != null && oAuth.Provider != null && oAuth.Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(oAuth.Provider.TokenResponse.access_token))
                 {
-                    accessToken = oAuth.Provider.TokenResponse.access_token;
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", oAuth.Provider.TokenResponse.access_token);
                 }
 
                 HttpResponseMessage httpResponseMessage = null;
