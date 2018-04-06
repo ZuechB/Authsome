@@ -12,6 +12,7 @@ namespace Authsome.Portable.Extentions
 {
     public class RequestFactory
     {
+        private int attemptsCount = 0;
         public async Task<HttpResponseWrapper<T>> Request<T>(HttpOption method, string url, HttpContent bodyContent = null, OAuth oAuth = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
         {
             using (var client = new HttpClient())
@@ -35,7 +36,6 @@ namespace Authsome.Portable.Extentions
                 switch (method)
                 {
                     case HttpOption.Post:
-
                         httpResponseMessage = await client.PostAsync(new Uri(url, UriKind.RelativeOrAbsolute), bodyContent);
                         break;
                     case HttpOption.Get:
@@ -75,6 +75,12 @@ namespace Authsome.Portable.Extentions
                                 oAuth.Provider.TokenResponse = tokenReponse.Content;
 
                                 // since the token was refresh we can now re-attempted the actual call
+                                attemptsCount++;
+
+                                if (attemptsCount > 3)
+                                {
+                                    return null;
+                                }
                                 return await Request<T>(method, url, bodyContent, oAuth, HeaderBuilder, RefreshedToken);
                             }
                         }
