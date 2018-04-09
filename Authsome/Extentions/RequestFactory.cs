@@ -61,7 +61,7 @@ namespace Authsome.Portable.Extentions
                         // attempt to renew and recall the same api
                         if (oAuth != null && oAuth.Provider != null && oAuth.Provider.TokenResponse != null && !String.IsNullOrWhiteSpace(oAuth.Provider.TokenResponse.refresh_token))
                         {
-                            var tokenReponse = await oAuth.RefreshTheAccessTokenAsync(oAuth.Provider.TokenResponse.refresh_token);
+                            var tokenReponse = await oAuth.RefreshTheAccessTokenAsync(oAuth.Provider.TokenResponse);
 
                             // regardless of the state of the token (valid or not) we want to notify what happened on the request
                             if (RefreshedToken != null)
