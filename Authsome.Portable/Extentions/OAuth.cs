@@ -58,7 +58,7 @@ namespace Authsome.Portable.Extentions
             return null;
         }
 
-        public async Task<HttpResponseWrapper<TokenResponse>> RefreshTheAccessTokenAsync(string refreshToken)
+        public async Task<HttpResponseWrapper<TokenResponse>> RefreshTheAccessTokenAsync(TokenResponse tokenResponse)
         {
             if (Provider != null)
             {
@@ -66,16 +66,18 @@ namespace Authsome.Portable.Extentions
 
                 var authsome = new AuthsomeService();
                 var response = await authsome.PostAsync<TokenResponse>(Provider.RefreshAccessTokenUrl, 
-                    new StringContent("grant_type=refresh_token&refresh_token=" + refreshToken, Encoding.UTF8, "application/x-www-form-urlencoded"),
+                    new StringContent("grant_type=refresh_token&refresh_token=" + tokenResponse.refresh_token, Encoding.UTF8, "application/x-www-form-urlencoded"),
                     (header) =>
                     {
                         header.IncludeBasicAuth(Provider.clientId, Provider.secret);
                     });
-
                 
                 if (response.httpStatusCode == HttpStatusCode.OK)
                 {
-                    httpResponseWrapper.Content = response.Content;
+                    var contentResponse = response.Content;
+                    contentResponse.Id = tokenResponse.Id; // Note: will take the id from the previous value and readded it (this is the database value)
+
+                    httpResponseWrapper.Content = contentResponse;
                 }
                 else
                 {

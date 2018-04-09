@@ -14,18 +14,18 @@ namespace CoreConsoleApp
             Task.Run(async () =>
             {
                 var authsome = new AuthsomeService();
+                authsome.InitGlobalRefreshToken((refreshedToken) =>
+                {
+                    if (refreshedToken.httpStatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        //refreshedToken.Content.access_token -- your new token
+                    }
+                });
 
                 var response = await authsome.GetAsync<BingJson_Rootobject>("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US",
                     (header) =>
                     {
                         header.IncludeAcceptMediaType(MediaType.application_json);
-                    }, 
-                    (refreshedToken) =>
-                    {
-                        if (refreshedToken.httpStatusCode == System.Net.HttpStatusCode.OK)
-                        {
-                            //refreshedToken.Content.access_token -- your new token
-                        }
                     });
 
                 if (response.httpStatusCode == System.Net.HttpStatusCode.OK)
