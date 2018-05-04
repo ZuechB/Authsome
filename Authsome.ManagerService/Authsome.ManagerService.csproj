@@ -5,11 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <PackageReference Include="Authsome" Version="1.0.5" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Authsome" Version="1.0.5" />
+    <Reference Include="Microsoft.EntityFrameworkCore">
+      <HintPath>..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\microsoft.entityframeworkcore\2.0.2\lib\netstandard2.0\Microsoft.EntityFrameworkCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,8 @@
-﻿using Authsome.ManagerService.Data;
+﻿using Authsome.ManagerService.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Authsome.ManagerService
@@ -9,7 +10,6 @@ namespace Authsome.ManagerService
     public interface IOAuthManagerService
     {
         Task<Provider> GetProvider(ProviderType Type);
-        //Task<Provider> GetProvider(long locationId);
         Task<Provider> GetProvider(string Identifier, ProviderType Type);
         Task UpdateToken(ProviderType ProviderId, TokenResponse tokenResponse, string Identifier = null, string IdentifierName = null);
         List<IntegratedProvider> GetAllProviders();
@@ -19,9 +19,21 @@ namespace Authsome.ManagerService
 
     public class OAuthManagerService : IOAuthManagerService
     {
-        readonly ProviderDataContext companyContext;
+        readonly Authsome.ManagerService.Data.ProviderDataContext companyContext;
 
-        public OAuthManagerService(ProviderDataContext companyContext) : base(appContext)
+        public bool IsProduction
+        {
+            get
+            {
+#if DEBUG
+                return false;
+#else
+                return true;
+#endif
+            }
+        }
+
+        public OAuthManagerService(Authsome.ManagerService.Data.ProviderDataContext companyContext)
         {
             this.companyContext = companyContext;
         }
@@ -29,7 +41,7 @@ namespace Authsome.ManagerService
         public async Task<Provider> GetProvider(ProviderType type)
         {
             var dbProvider = await companyContext.Providers.Include(t => t.OAuthTokens)
-                .Where(p => p.ProviderType == type && p.IsProduction == IsProduction && p.PartnerId == (PartnerId != -1 ? PartnerId : 1)).FirstOrDefaultAsync();
+                .Where(p => p.ProviderType == type && p.IsProduction == IsProduction).FirstOrDefaultAsync();
             if (dbProvider != null)
             {
                 return ConvertProvider(dbProvider);
@@ -45,7 +57,7 @@ namespace Authsome.ManagerService
             try
             {
                 var provider = await companyContext.Providers.Include(p => p.OAuthTokens)
-                    .Where(p => p.ProviderType == type && p.IsProduction == IsProduction && p.PartnerId == (PartnerId != -1 ? PartnerId : 1)).FirstOrDefaultAsync();
+                    .Where(p => p.ProviderType == type && p.IsProduction == IsProduction).FirstOrDefaultAsync();
 
                 var oAuthToken = provider.OAuthTokens.Where(a => a.Identifier == Identifier).FirstOrDefault();
 
@@ -73,34 +85,21 @@ namespace Authsome.ManagerService
             }
         }
 
-        public async Task<Provider> GetProvider(long locationId)
+        public async Task<List<OAuthToken>> GetOAuthConnections(ProviderType type)
         {
-            var location = await companyContext.Locations.Where(l => l.Id == locationId).FirstOrDefaultAsync();
-            if (location != null)
-            {
-                return ConvertProvider(await companyContext.Providers.Include(t => t.OAuthTokens.Where(p => p.Identifier == location.QuickbooksCompanyRef)).FirstOrDefaultAsync());
-            }
-            else
-            {
-                return null;
-            }
+            var dbProvider = await companyContext.Providers.Include(t => t.OAuthTokens).Where(p => p.ProviderType == type && p.IsProduction == IsProduction).FirstOrDefaultAsync();
+            return dbProvider?.OAuthTokens.ToList() ?? new List<OAuthToken>();
         }
 
-        public async Task<List<Entities.OAuthToken>> GetOAuthConnections(ProviderType type)
+        public bool IsProviderActivated(ProviderType Type)
         {
-            var dbProvider = await companyContext.Providers.Include(t => t.OAuthTokens).Where(p => p.ProviderType == type && p.IsProduction == IsProduction && p.PartnerId == (PartnerId != -1 ? PartnerId : 1)).FirstOrDefaultAsync();
-            return dbProvider?.OAuthTokens.ToList() ?? new List<Entities.OAuthToken>();
-        }
-
-        public bool IsProviderActivated(Entities.ProviderType Type)
-        {
-            return companyContext.Providers.Include(t => t.OAuthTokens).Where(p => p.ProviderType == Type && p.IsProduction == IsProduction && p.PartnerId == (PartnerId != -1 ? PartnerId : 1)).Any();
+            return companyContext.Providers.Include(t => t.OAuthTokens).Where(p => p.ProviderType == Type && p.IsProduction == IsProduction).Any();
         }
 
         public List<IntegratedProvider> GetAllProviders()
         {
             var providerList = new List<IntegratedProvider>();
-            var providers = companyContext.Providers.Where(p => p.IsProduction == IsProduction && p.PartnerId == (PartnerId != -1 ? PartnerId : 1)).Include(p => p.OAuthTokens);
+            var providers = companyContext.Providers.Where(p => p.IsProduction == IsProduction).Include(p => p.OAuthTokens);
             foreach (var provider in providers)
             {
                 var Identifiers = new List<OAuthIdentifier>();
@@ -128,7 +127,7 @@ namespace Authsome.ManagerService
             return providerList;
         }
 
-        private Provider ConvertProvider(Provider dbProvider)
+        private Provider ConvertProvider(Authsome.ManagerService.Models.Provider dbProvider)
         {
             var provider = new Provider();
             provider.Id = (long)dbProvider.ProviderType;
@@ -165,9 +164,9 @@ namespace Authsome.ManagerService
 
         public async Task UpdateToken(ProviderType providerType, TokenResponse tokenResponse, string identifier = null, string identifierName = null)
         {
-            Entities.OAuthToken token;
+            OAuthToken token;
             var provider = await companyContext.Providers.Include(p => p.OAuthTokens)
-                .Where(p => p.ProviderType == providerType && p.IsProduction == IsProduction && p.PartnerId == (PartnerId != -1 ? PartnerId : 1)).FirstOrDefaultAsync();
+                .Where(p => p.ProviderType == providerType && p.IsProduction == IsProduction).FirstOrDefaultAsync();
             if (provider == null)
             {
                 throw new Exception("No provider found for that type");
@@ -206,8 +205,8 @@ namespace Authsome.ManagerService
                 if (!String.IsNullOrWhiteSpace(tokenResponse.x_refresh_token_expires_in))
                 { token.x_refresh_token_expires_in = tokenResponse.x_refresh_token_expires_in; }
 
-                token.TokenRenewal = SystemTime.Now;
-                token.PartnerId = PartnerId == -1 ? 1 : PartnerId;
+                token.TokenRenewal = DateTimeOffset.UtcNow;
+                //token.PartnerId = PartnerId == -1 ? 1 : PartnerId;
 
                 if (identifier != null)
                 {
@@ -221,7 +220,7 @@ namespace Authsome.ManagerService
             }
             else
             {
-                companyContext.OAuthTokens.Add(new Entities.OAuthToken()
+                companyContext.OAuthTokens.Add(new OAuthToken()
                 {
                     access_token = tokenResponse.access_token,
                     expires_in = tokenResponse.expires_in,
@@ -229,8 +228,8 @@ namespace Authsome.ManagerService
                     token_type = tokenResponse.token_type,
                     x_refresh_token_expires_in = tokenResponse.x_refresh_token_expires_in,
                     ProviderId = provider.Id,
-                    PartnerId = PartnerId == -1 ? 1 : PartnerId,
-                    TokenRenewal = SystemTime.Now,
+                    //PartnerId = PartnerId == -1 ? 1 : PartnerId,
+                    TokenRenewal = DateTimeOffset.UtcNow,
                     Identifier = identifier,
                     IdentifierName = identifierName,
 
