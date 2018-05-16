@@ -4,8 +4,10 @@ This project allows you to send/receive requests as well as assist with authoriz
 
 ## Nuget
 
-.net Standard: https://www.nuget.org/packages/Authsome
-Portable: https://www.nuget.org/packages/Authsome.Portable
+<ol>
+    <li>.net Standard: https://www.nuget.org/packages/Authsome</li>
+    <li>Portable: https://www.nuget.org/packages/Authsome.Portable</li>
+</ol>
 
 # Method Example:
 
