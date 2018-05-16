@@ -1,6 +1,6 @@
 # Authsome
 
-This project allows you to send/receive requests as well as assist with authorization at the same time for OAuth and Basic OAuth.
+This project allows you to send/receive requests as well as assist with authorization at the same time for OAuth and Basic auth.
 
 ## Nuget
 
