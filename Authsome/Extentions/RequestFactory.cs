@@ -1,11 +1,9 @@
 ﻿using Authsome.Models;
 using Authsome.Portable.Builder;
-using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Authsome.Portable.Extentions
@@ -13,9 +11,9 @@ namespace Authsome.Portable.Extentions
     public class RequestFactory
     {
         private int attemptsCount = 0;
-        public async Task<HttpResponseWrapper<T>> Request<T>(HttpOption method, string url, HttpContent bodyContent = null, OAuth oAuth = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null)
+        public async Task<HttpResponseWrapper<T>> Request<T>(HttpOption method, string url, HttpContent bodyContent = null, OAuth oAuth = null, Action<IHeaderRequest> HeaderBuilder = null, Action<HttpResponseWrapper<TokenResponse>> RefreshedToken = null, bool isClone = false)
         {
-            using (var client = new HttpClient())
+            var client = new HttpClient();
             {
                 SetDefaultConfigs(client);
                 HeaderBuilder?.Invoke(new HeaderRequest(client.DefaultRequestHeaders));
@@ -81,7 +79,7 @@ namespace Authsome.Portable.Extentions
                                 {
                                     return null;
                                 }
-                                return await Request<T>(method, url, bodyContent, oAuth, HeaderBuilder, RefreshedToken);
+                                return await Request<T>(method, url, bodyContent, oAuth, HeaderBuilder, RefreshedToken, isClone: true);
                             }
                         }
                     }
