@@ -10,9 +10,6 @@ Portable: https://www.nuget.org/packages/Authsome.Portable
 # Method Example:
 
 ### Return / Response
-<ol>
-    <li>response: All responses return HttpResponseWrapper<your-return-object> which includes Content returned back </li>
-</ol>
 
 <pre><code>
 var response = await authsome.GetAsync<BingJson_Rootobject>("https://www.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1&mkt=en-US");
