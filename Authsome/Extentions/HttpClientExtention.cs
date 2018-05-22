@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,6 +17,22 @@ namespace Authsome
                 return JsonConvert.DeserializeObject<T>(readString);
             }
             return default(T);
+        }
+
+        internal static async Task<HttpContent> CloneAsync(this HttpContent content)
+        {
+            if (content == null)
+                return null;
+
+            Stream stream = new MemoryStream();
+            await content.CopyToAsync(stream).ConfigureAwait(false);
+            stream.Position = 0;
+
+            StreamContent clone = new StreamContent(stream);
+            foreach (var header in content.Headers)
+                clone.Headers.Add(header.Key, header.Value);
+
+            return clone;
         }
     }
 }
