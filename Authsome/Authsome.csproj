@@ -4,11 +4,11 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>Authsome</PackageId>
-    <Version>1.0.7</Version>
+    <Version>1.0.8</Version>
     <Authors>Zuechb</Authors>
     <Company>Zuechb</Company>
     <Product>Authsome</Product>
-    <Description>An experimental library for api request and authentication</Description>
+    <Description>Interface that allows you to send requests (including OAuth and Basic Auth) and parse the response in one step and removing all the retry logic, encoding, serialization, refreshing tokens.</Description>
     <Copyright></Copyright>
   </PropertyGroup>
 
