@@ -24,11 +24,13 @@ namespace Authsome
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, object body, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PostAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PostAsync<T>(string url, MultipartFormDataContent content, Action<IHeaderRequest> HeaderBuilder = null);
 
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body, MediaType mediaType, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, StringContent content = null, Action<IHeaderRequest> HeaderBuilder = null);
         Task<HttpResponseWrapper<T>> PutAsync<T>(string url, object body, string mediaType = "application/json", Action<IHeaderRequest> HeaderBuilder = null);
+        Task<HttpResponseWrapper<T>> PutAsync<T>(string url, MultipartFormDataContent content, Action<IHeaderRequest> HeaderBuilder = null);
 
         Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null);
 
@@ -107,6 +109,17 @@ namespace Authsome
             return await factory.Request<T>(HttpOption.Post, url, content, oAuth: oAuth, HeaderBuilder: HeaderBuilder, RefreshedToken: RefreshedToken);
         }
 
+        public async Task<HttpResponseWrapper<T>> PostAsync<T>(string url, MultipartFormDataContent content, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Post, url, content, oAuth: oAuth, HeaderBuilder: HeaderBuilder, RefreshedToken: RefreshedToken);
+        }
+
+
+
+
+
+
         public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, FormUrlEncodedContent content = null, Action<IHeaderRequest> HeaderBuilder = null)
         {
             var factory = new RequestFactory();
@@ -140,6 +153,13 @@ namespace Authsome
             var factory = new RequestFactory();
             return await factory.Request<T>(HttpOption.Put, url, content, oAuth: oAuth, HeaderBuilder: HeaderBuilder, RefreshedToken: RefreshedToken);
         }
+
+        public async Task<HttpResponseWrapper<T>> PutAsync<T>(string url, MultipartFormDataContent content, Action<IHeaderRequest> HeaderBuilder = null)
+        {
+            var factory = new RequestFactory();
+            return await factory.Request<T>(HttpOption.Put, url, content, oAuth: oAuth, HeaderBuilder: HeaderBuilder, RefreshedToken: RefreshedToken);
+        }
+
 
         public async Task<HttpResponseWrapper<T>> DeleteAsync<T>(string url, Action<IHeaderRequest> HeaderBuilder = null)
         {
