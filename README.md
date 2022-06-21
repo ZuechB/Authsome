@@ -1,6 +1,6 @@
 # Authsome
 
-This project allows you to send/receive requests as well as assist with authorization at the same time.
+This project is no longer maintained
 
 ## Nuget
 
